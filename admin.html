@@ -1,0 +1,2615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SWCHAT · 智能客服聊天系统</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== 全局重置 ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            color: #0f172a;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+        .section-title h2 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+        .section-title p {
+            font-size: 17px;
+            color: #64748b;
+            max-width: 620px;
+            margin: 0 auto;
+        }
+        .section-title .tag {
+            display: inline-block;
+            padding: 4px 18px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background: #dbeafe;
+            color: #2563eb;
+            margin-bottom: 14px;
+        }
+
+        .btn-primary {
+            padding: 14px 34px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            border: none;
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(37, 99, 235, 0.45);
+        }
+        .btn-secondary {
+            padding: 14px 34px;
+            background: #ffffff;
+            color: #1e293b;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+        .btn-secondary:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #f8fafc;
+            transform: translateY(-2px);
+        }
+
+        /* ===== 导航 ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 0;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+            transition: box-shadow 0.3s ease;
+        }
+        .navbar.scrolled { box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06); }
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 20px;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+        .nav-brand .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 900;
+        }
+        .nav-brand span {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            list-style: none;
+        }
+        .nav-links a {
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: #2563eb; }
+        .nav-cta {
+            padding: 8px 22px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff !important;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+            color: #fff !important;
+        }
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+        .nav-toggle span {
+            width: 26px;
+            height: 2.5px;
+            background: #1e293b;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        /* ===== 英雄区 ===== */
+        .hero {
+            padding: 150px 0 90px 0;
+            background: #f8fafc;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(45deg,
+                    rgba(30, 58, 138, 0.08) 0px, rgba(30, 58, 138, 0.08) 20px,
+                    rgba(59, 130, 246, 0.08) 20px, rgba(59, 130, 246, 0.08) 40px,
+                    rgba(147, 197, 253, 0.08) 40px, rgba(147, 197, 253, 0.08) 60px,
+                    rgba(30, 58, 138, 0.08) 60px, rgba(30, 58, 138, 0.08) 80px);
+            background-size: 200% 200%;
+            animation: gradientShift 12s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero .container {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            width: 100%;
+        }
+        .hero-content h1 {
+            font-size: 52px;
+            font-weight: 900;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+            color: #0f172a;
+        }
+        .hero-content h1 .highlight {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-content .sub {
+            font-size: 18px;
+            color: #475569;
+            max-width: 500px;
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+            margin-top: 44px;
+            padding-top: 32px;
+            border-top: 1px solid #e9edf2;
+        }
+        .hero-stats .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .hero-stats .stat-number {
+            font-size: 30px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+        .hero-stats .stat-label {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .hero-preview {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.12), 0 8px 24px -6px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eef2f6;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+            animation: cardFloat 4s ease-in-out infinite;
+        }
+        @keyframes cardFloat {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); box-shadow: 0 32px 80px -16px rgba(0, 0, 0, 0.15); }
+            100% { transform: translateY(0px); }
+        }
+        .hero-preview:hover {
+            animation-play-state: paused;
+            transform: translateY(-10px) scale(1.01);
+        }
+
+        .preview-header {
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+        }
+        .preview-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .preview-header-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        .preview-header-info span {
+            font-size: 12px;
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .preview-header-info span i {
+            font-size: 8px;
+            color: #22c55e;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+        }
+
+        .preview-messages {
+            padding: 18px 20px 12px 20px;
+            background: #f8fafc;
+            min-height: 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .preview-msg {
+            max-width: 80%;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInUp 0.4s ease;
+        }
+        .preview-msg.agent { align-self: flex-start; align-items: flex-start; }
+        .preview-msg.user { align-self: flex-end; align-items: flex-end; }
+        .preview-msg .bubble {
+            padding: 10px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+        .preview-msg.agent .bubble {
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid #e9edf2;
+            border-bottom-left-radius: 4px;
+        }
+        .preview-msg.user .bubble {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .preview-msg .time {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 3px;
+            padding: 0 4px;
+        }
+        .preview-footer {
+            padding: 12px 16px 16px 16px;
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .preview-footer input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: #f1f5f9;
+            padding: 10px 16px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #0f172a;
+        }
+        .preview-footer input::placeholder { color: #94a3b8; }
+        .preview-footer .send-demo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            transition: transform 0.15s;
+        }
+        .preview-footer .send-demo:hover { transform: scale(1.05); }
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== 信任 Logo 墙 ===== */
+        .trust-bar {
+            padding: 32px 0;
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .trust-bar .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+        }
+        .trust-item {
+            font-size: 14px;
+            font-weight: 600;
+            color: #94a3b8;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .trust-item:hover { opacity: 1; }
+        .trust-item svg { color: #2563eb; }
+
+        /* ===== 广告通栏 ===== */
+        .ad-banner {
+            padding: 32px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .ad-banner .ad-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(4px);
+            padding: 20px 32px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .ad-banner .ad-text {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .ad-banner .ad-text .ad-icon { font-size: 32px; }
+        .ad-banner h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+        .ad-banner p {
+            font-size: 15px;
+            color: #475569;
+            margin: 0;
+        }
+        .ad-tag {
+            padding: 4px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            color: #fff;
+        }
+        .ad-tag.orange { background: #f97316; }
+        .ad-tag.blue { background: #3b82f6; }
+        .ad-tag.green { background: #22c55e; }
+        .ad-tag.purple { background: #8b5cf6; }
+        .ad-tag.pink { background: #ec4899; }
+
+        .ad-banner--1 { background: linear-gradient(135deg, #fef3c7, #fde68a); border-color: #f59e0b; }
+        .ad-banner--1 .ad-content { background: rgba(255,255,255,0.7); }
+        .ad-banner--2 { background: linear-gradient(135deg, #e0f2fe, #bae6fd); border-color: #38bdf8; }
+        .ad-banner--2 .ad-content { background: rgba(255,255,255,0.7); }
+
+        /* ===== 通栏广告 3 ===== */
+        .ad-banner--3 {
+            background: linear-gradient(135deg, #dbeafe, #eff6ff, #e0f2fe);
+            border: none;
+            padding: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .ad-banner--3::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .ad-banner--3::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .ad-banner--3 .ad-content {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 32px 40px;
+            box-shadow: 0 8px 40px rgba(37, 99, 235, 0.10);
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+        .ad-banner--3 .ad-text {
+            flex: 1;
+            min-width: 240px;
+            gap: 12px;
+        }
+        .ad-banner--3 .ad-tag-glow {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            padding: 4px 18px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+        .ad-banner--3 h3 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 4px 0 2px;
+        }
+        .ad-banner--3 p {
+            font-size: 15px;
+            color: #475569;
+            max-width: 540px;
+        }
+        .ad-banner--3 .ad-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .ad-banner--3 .btn-primary-cta {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.35);
+            padding: 14px 30px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ad-banner--3 .btn-primary-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.5);
+        }
+        .ad-banner--3 .btn-secondary-cta-light {
+            background: rgba(255, 255, 255, 0.7);
+            color: #1e293b;
+            border: 1.5px solid #cbd5e1;
+            padding: 14px 30px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ad-banner--3 .btn-secondary-cta-light:hover {
+            background: #ffffff;
+            border-color: #2563eb;
+            color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        /* ============================================================
+           通栏广告 4 · 用户评价上方
+           ============================================================ */
+        .ad-banner--4 {
+            background: linear-gradient(135deg, #fef9f0, #fde8d0, #fde2d0);
+            border: none;
+            padding: 36px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .ad-banner--4::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(251, 146, 60, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .ad-banner--4::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .ad-banner--4 .ad-content {
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 28px 36px;
+            box-shadow: 0 8px 32px rgba(251, 146, 60, 0.12);
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+        .ad-banner--4 .ad-text {
+            flex: 1;
+            min-width: 200px;
+            gap: 12px;
+        }
+        .ad-banner--4 .ad-tag-warm {
+            background: linear-gradient(135deg, #fb923c, #f97316);
+            color: #fff;
+            padding: 4px 18px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+        }
+        .ad-banner--4 h3 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 4px 0 2px;
+        }
+        .ad-banner--4 p {
+            font-size: 15px;
+            color: #475569;
+            max-width: 480px;
+        }
+        .ad-banner--4 .ad-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .ad-banner--4 .btn-warm-cta {
+            background: linear-gradient(135deg, #fb923c, #f97316);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.35);
+            padding: 14px 30px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ad-banner--4 .btn-warm-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(249, 115, 22, 0.5);
+        }
+        .ad-banner--4 .btn-secondary-cta-warm {
+            background: rgba(255, 255, 255, 0.6);
+            color: #1e293b;
+            border: 1.5px solid #e2e8f0;
+            padding: 14px 30px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ad-banner--4 .btn-secondary-cta-warm:hover {
+            background: #ffffff;
+            border-color: #fb923c;
+            color: #f97316;
+            transform: translateY(-2px);
+        }
+
+        /* ============================================================
+           通栏广告 5 · CTA 上方 (粉蓝色系)
+           ============================================================ */
+        .ad-banner--5 {
+            background: linear-gradient(135deg, #f0f4ff, #e0eaff, #d6e4ff);
+            border: none;
+            padding: 36px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .ad-banner--5::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.10) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .ad-banner--5::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -5%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .ad-banner--5 .ad-content {
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 28px 36px;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.10);
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+        .ad-banner--5 .ad-text {
+            flex: 1;
+            min-width: 200px;
+            gap: 12px;
+        }
+        .ad-banner--5 .ad-tag-pink-blue {
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+            color: #fff;
+            padding: 4px 18px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+        .ad-banner--5 h3 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 4px 0 2px;
+        }
+        .ad-banner--5 p {
+            font-size: 15px;
+            color: #475569;
+            max-width: 480px;
+        }
+        .ad-banner--5 .ad-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .ad-banner--5 .btn-pink-blue-cta {
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+            padding: 14px 30px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ad-banner--5 .btn-pink-blue-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
+        }
+        .ad-banner--5 .btn-secondary-cta-pink-blue {
+            background: rgba(255, 255, 255, 0.6);
+            color: #1e293b;
+            border: 1.5px solid #e2e8f0;
+            padding: 14px 30px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ad-banner--5 .btn-secondary-cta-pink-blue:hover {
+            background: #ffffff;
+            border-color: #818cf8;
+            color: #6366f1;
+            transform: translateY(-2px);
+        }
+
+        /* ===== 核心能力 ===== */
+        .features { padding: 90px 0; background: #ffffff; }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+        .feature-card {
+            padding: 32px 28px;
+            background: #f8fafc;
+            border-radius: 20px;
+            border: 1px solid #eef2f6;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s;
+            cursor: default;
+        }
+        .feature-card:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-color: #2563eb;
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(37, 99, 235, 0.25);
+        }
+        .feature-card:hover h3,
+        .feature-card:hover p,
+        .feature-card:hover .feature-tag { color: #ffffff; }
+        .feature-card:hover .feature-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        .feature-card:hover .feature-tag {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 18px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #0f172a;
+            transition: color 0.3s;
+        }
+        .feature-card p {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.7;
+            transition: color 0.3s;
+        }
+        .feature-card .feature-tag {
+            margin-top: 12px;
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #eef2f6;
+            color: #475569;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ============================================================
+           深度解析 · 美化 + 移动端两列
+           ============================================================ */
+        .deep-features {
+            padding: 80px 0;
+            background: #f8fafc;
+        }
+        .deep-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
+        }
+        .deep-item {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            padding: 28px 24px;
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+        .deep-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, transparent 40%, #2563eb, #7c3aed, transparent 60%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .deep-item:hover::before {
+            opacity: 1;
+        }
+        .deep-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 36px -12px rgba(37, 99, 235, 0.20);
+            border-color: transparent;
+            background: #ffffff;
+        }
+        .deep-item:hover .deep-icon {
+            transform: rotate(6deg) scale(1.1);
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+        }
+        .deep-icon {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            border-radius: 16px;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: transform 0.35s ease, background 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+        }
+        .deep-item h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #0f172a;
+        }
+        .deep-item p {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.7;
+        }
+
+        /* ============================================================
+           高效管理 · 手机端四行
+           ============================================================ */
+        .showcase {
+            padding: 80px 0;
+            background: #ffffff;
+        }
+        .showcase .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            margin-bottom: 32px;
+        }
+        .showcase-card {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 32px 28px 28px;
+            border: 1px solid #eef2f6;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        box-shadow 0.35s ease,
+                        border-color 0.35s ease;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+        .showcase-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .showcase-card:hover::after {
+            opacity: 1;
+        }
+        .showcase-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 16px 48px -12px rgba(37, 99, 235, 0.18);
+            border-color: #2563eb;
+            background: #ffffff;
+        }
+        .showcase-card .card-icon-wrap {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 18px;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .showcase-card:hover .card-icon-wrap {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: scale(1.05);
+        }
+        .showcase-card:hover .card-icon-wrap span {
+            filter: brightness(10);
+        }
+        .showcase-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        .showcase-card p {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+        .showcase-card .card-metric {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            padding-top: 12px;
+            border-top: 1px solid #e9edf2;
+        }
+        .showcase-card .metric-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2563eb;
+            letter-spacing: -0.02em;
+        }
+        .showcase-card .metric-label {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .showcase-card:hover .metric-value {
+            color: #1d4ed8;
+        }
+
+        .showcase-extra {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 18px 28px;
+            background: #f1f5f9;
+            border-radius: 20px;
+            padding: 20px 28px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            margin-bottom: 36px;
+        }
+        .showcase-extra:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+            border-color: #2563eb;
+        }
+        .showcase-extra .extra-icon {
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+        .showcase-extra .extra-text {
+            flex: 1;
+            min-width: 160px;
+        }
+        .showcase-extra .extra-text h4 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 2px;
+        }
+        .showcase-extra .extra-text p {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+        }
+        .showcase-extra .extra-link {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2563eb;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap 0.2s;
+            white-space: nowrap;
+        }
+        .showcase-extra .extra-link:hover {
+            gap: 12px;
+            color: #1d4ed8;
+        }
+
+        .showcase-action {
+            text-align: center;
+        }
+        .showcase-action .btn-primary {
+            padding: 16px 44px;
+            font-size: 17px;
+        }
+
+        /* ===== 安全合规 ===== */
+        .security {
+            padding: 80px 0;
+            background: #0f172a;
+            position: relative;
+            overflow: hidden;
+        }
+        .security::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, #2563eb, #7c3aed, #ec4899, #2563eb);
+            animation: rotateGradient 20s linear infinite;
+            opacity: 0.12;
+            pointer-events: none;
+        }
+        @keyframes rotateGradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .security .container { position: relative; z-index: 1; }
+        .security .section-title h2,
+        .security .section-title p,
+        .security .section-title .tag { color: #f8fafc; }
+        .security .section-title .tag {
+            background: rgba(255, 255, 255, 0.15);
+            color: #93c5fd;
+        }
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        .security-card {
+            padding: 28px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: transform 0.2s, background 0.2s;
+            color: #f8fafc;
+        }
+        .security-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .security-card .icon { font-size: 32px; margin-bottom: 12px; }
+        .security-card h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f8fafc;
+        }
+        .security-card p {
+            font-size: 13px;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        /* ===== 定价 ===== */
+        .pricing { padding: 80px 0; background: #ffffff; }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .pricing-card {
+            padding: 36px 28px;
+            border-radius: 24px;
+            border: 1px solid #eef2f6;
+            background: #ffffff;
+            text-align: center;
+            transition: transform 0.25s, box-shadow 0.25s;
+            position: relative;
+        }
+        .pricing-card.popular {
+            border-color: #2563eb;
+            box-shadow: 0 8px 32px rgba(37, 99, 235, 0.08);
+            transform: scale(1.02);
+        }
+        .pricing-card.popular .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 20px;
+            border-radius: 100px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .pricing-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.06);
+        }
+        .pricing-card.popular:hover { transform: scale(1.02) translateY(-6px); }
+        .pricing-card .price {
+            font-size: 44px;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 16px 0 4px;
+        }
+        .pricing-card .price span {
+            font-size: 16px;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+        .pricing-card .plan-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .pricing-card .plan-desc {
+            font-size: 14px;
+            color: #64748b;
+            margin: 8px 0 20px;
+        }
+        .pricing-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0 28px;
+            text-align: left;
+        }
+        .pricing-card ul li {
+            padding: 6px 0;
+            font-size: 14px;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pricing-card ul li::before {
+            content: '✓';
+            color: #2563eb;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .pricing-card .btn-primary { width: 100%; justify-content: center; }
+
+        /* ===== 用户评价 ===== */
+        .testimonials { padding: 80px 0; background: #f8fafc; }
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+        }
+        .testimonial-card {
+            background: #f1f5f9;
+            padding: 28px 24px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+        }
+        .testimonial-card .stars {
+            color: #f59e0b;
+            font-size: 16px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        .testimonial-card blockquote {
+            font-size: 15px;
+            color: #0f172a;
+            line-height: 1.7;
+            font-style: italic;
+            margin-bottom: 14px;
+            font-weight: 500;
+        }
+        .testimonial-card .author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .testimonial-card .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dbeafe;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .testimonial-card .author-info strong {
+            display: block;
+            color: #0f172a;
+        }
+        .testimonial-card .author-info span {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        /* ===== 三步部署 ===== */
+        .deploy {
+            padding: 80px 0;
+            background: #0f172a;
+            color: #f8fafc;
+        }
+        .deploy .section-title h2,
+        .deploy .section-title p,
+        .deploy .section-title .tag { color: #f8fafc; }
+        .deploy .section-title .tag {
+            background: rgba(255, 255, 255, 0.15);
+            color: #93c5fd;
+        }
+        .deploy-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .deploy-step {
+            text-align: center;
+            padding: 24px 16px;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            cursor: default;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .deploy-step:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(255,255,255,0.08);
+        }
+        .deploy-step:hover .step-num {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+        .deploy-step .step-num {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0 auto 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .deploy-step h4 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f8fafc;
+        }
+        .deploy-step p {
+            font-size: 13px;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        /* ===== FAQ ===== */
+        .faq { padding: 80px 0; background: #f8fafc; }
+        .faq-list {
+            max-width: 820px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .faq-item {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #eef2f6;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .faq-item:hover { border-color: #2563eb; }
+        .faq-question {
+            padding: 18px 24px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #0f172a;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            gap: 16px;
+        }
+        .faq-question .arrow {
+            transition: transform 0.3s;
+            font-size: 18px;
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+        .faq-item.open .faq-question .arrow { transform: rotate(180deg); }
+        .faq-answer {
+            padding: 0 24px 20px 24px;
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.8;
+            display: none;
+        }
+        .faq-item.open .faq-answer { display: block; }
+
+        /* ===== 公司 ===== */
+        .company { padding: 80px 0; background: #ffffff; }
+        .company-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+        .company-info h2 {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+        .company-info p {
+            font-size: 16px;
+            color: #475569;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .company-info .contact-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .company-info .contact-row a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: #f1f5f9;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            transition: background 0.2s, color 0.2s;
+        }
+        .company-info .contact-row a:hover {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .company-map {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #eef2f6;
+            background: #eef2f6;
+            min-height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 14px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23eef2f6"/><text x="50" y="55" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" fill="%2394a3b8">📍 成都 · 成华</text></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* ============================================================
+           CTA 板块 · 全新设计
+           ============================================================ */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(145deg, #080c1a, #0f1a2e, #0a1120);
+            color: #fff;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+        .cta-section .cta-bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(37, 99, 235, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 99, 235, 0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .cta-section .cta-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.20) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            pointer-events: none;
+            z-index: 0;
+            animation: glowPulse 6s ease-in-out infinite alternate;
+        }
+        .cta-section .cta-glow--2 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+            bottom: -150px;
+            left: -150px;
+            pointer-events: none;
+            z-index: 0;
+            animation: glowPulse 8s ease-in-out infinite alternate-reverse;
+        }
+        @keyframes glowPulse {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .cta-section .cta-content {
+            position: relative;
+            z-index: 1;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+        .cta-section .cta-badge {
+            display: inline-block;
+            padding: 4px 20px;
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            font-size: 13px;
+            font-weight: 600;
+            color: #93c5fd;
+            letter-spacing: 0.04em;
+            margin-bottom: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .cta-section h2 {
+            font-size: 44px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: 18px;
+            background: linear-gradient(to right, #ffffff, #b6c8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .cta-section .cta-desc {
+            font-size: 19px;
+            color: #94a3b8;
+            max-width: 560px;
+            margin: 0 auto 38px auto;
+            line-height: 1.8;
+        }
+        .cta-section .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        .cta-section .btn-primary-cta {
+            padding: 16px 46px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+            border: none;
+            border-radius: 100px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 28px rgba(37, 99, 235, 0.45);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: inherit;
+            text-decoration: none;
+        }
+        .cta-section .btn-primary-cta:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 44px rgba(37, 99, 235, 0.6);
+        }
+        .cta-section .btn-secondary-cta {
+            padding: 16px 40px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #e2e8f0;
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 100px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: inherit;
+            text-decoration: none;
+            backdrop-filter: blur(4px);
+        }
+        .cta-section .btn-secondary-cta:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-4px);
+            color: #ffffff;
+        }
+
+        /* ===== 页脚 ===== */
+        .footer {
+            padding: 48px 0 24px 0;
+            background: #ffffff;
+            border-top: 1px solid #eef2f6;
+        }
+        .footer .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        .footer-brand .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .footer-brand p {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 6px;
+            max-width: 280px;
+            line-height: 1.7;
+        }
+        .footer-links {
+            display: flex;
+            gap: 48px;
+            flex-wrap: wrap;
+        }
+        .footer-links .col h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .footer-links .col a {
+            display: block;
+            font-size: 14px;
+            color: #64748b;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+        .footer-links .col a:hover { color: #2563eb; }
+        .footer-bottom {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #eef2f6;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .footer-bottom .license {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 20px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .footer-bottom .license span { white-space: nowrap; }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1024px) {
+            .hero .container, .company-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .hero-content p, .hero-content .sub { margin-left: auto; margin-right: auto; }
+            .hero-buttons { justify-content: center; }
+            .hero-stats { justify-content: center; }
+            .showcase .showcase-grid { grid-template-columns: 1fr 1fr; }
+            .features-grid, .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+            .testimonial-grid { grid-template-columns: repeat(2, 1fr); }
+            .security-grid { grid-template-columns: repeat(2, 1fr); }
+            .deep-grid { grid-template-columns: 1fr 1fr; }
+            .deploy-steps { grid-template-columns: repeat(2, 1fr); }
+            .ad-banner .ad-content { flex-direction: column; text-align: center; padding: 24px; }
+            .ad-banner .ad-text { justify-content: center; }
+            .ad-banner--3 .ad-content { flex-direction: column; text-align: center; padding: 28px 24px; }
+            .ad-banner--3 .ad-actions { justify-content: center; }
+            .ad-banner--3 .ad-text { align-items: center; }
+            .ad-banner--4 .ad-content { flex-direction: column; text-align: center; padding: 24px 20px; }
+            .ad-banner--4 .ad-actions { justify-content: center; }
+            .ad-banner--4 .ad-text { align-items: center; }
+            .ad-banner--5 .ad-content { flex-direction: column; text-align: center; padding: 24px 20px; }
+            .ad-banner--5 .ad-actions { justify-content: center; }
+            .ad-banner--5 .ad-text { align-items: center; }
+            .cta-section h2 { font-size: 34px; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                gap: 16px;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                padding: 24px 24px 32px 24px;
+                border-bottom: 1px solid #eef2f6;
+                backdrop-filter: blur(12px);
+            }
+            .nav-links.open { display: flex; }
+            .nav-toggle { display: flex; }
+
+            /* 英雄区手机端限制一屏 */
+            .hero {
+                padding: 100px 0 40px 0;
+                min-height: 100vh;
+                height: 100vh;
+                max-height: 100vh;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+            }
+            .hero .container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                padding: 0 20px;
+            }
+            .hero-content h1 { font-size: 28px; }
+            .hero-content .sub { font-size: 15px; margin-bottom: 20px; }
+            .hero-stats {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: center;
+                margin-top: 24px;
+                padding-top: 20px;
+            }
+            .hero-stats .stat-number { font-size: 22px; }
+            .hero-preview {
+                max-height: 280px;
+                display: flex;
+                flex-direction: column;
+            }
+            .preview-messages { min-height: 120px; max-height: 140px; overflow-y: auto; }
+            .hero-preview .preview-footer { padding: 8px 12px; }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .feature-card { padding: 20px 16px; }
+            .feature-card h3 { font-size: 15px; }
+            .feature-card p { font-size: 13px; }
+            .feature-icon { width: 40px; height: 40px; font-size: 18px; margin-bottom: 12px; }
+
+            /* 深度解析手机端两列 */
+            .deep-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            .deep-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 18px 14px;
+            }
+            .deep-item h4 { font-size: 15px; }
+            .deep-item p { font-size: 13px; }
+            .deep-icon { width: 44px; height: 44px; font-size: 20px; }
+
+            /* 高效管理手机端四行 */
+            .showcase .showcase-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .showcase-card { padding: 20px 18px; }
+            .showcase-card h3 { font-size: 17px; }
+            .showcase-card .card-icon-wrap { width: 48px; height: 48px; font-size: 24px; }
+            .showcase-card .metric-value { font-size: 22px; }
+            .showcase-extra {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 18px 20px;
+                margin-bottom: 20px;
+            }
+            .showcase-extra .extra-link { margin-top: 4px; }
+
+            .security-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .security-card { padding: 20px 16px; }
+
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .testimonial-card { padding: 20px 16px; }
+
+            .deploy-steps {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .deploy-step { padding: 16px 12px; }
+
+            .faq-list {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 12px;
+                max-width: 100%;
+            }
+            .faq-item { margin-bottom: 0; }
+            .faq-question { padding: 14px 16px; font-size: 14px; }
+            .faq-answer { padding: 0 16px 16px 16px; font-size: 14px; }
+
+            .pricing-grid { grid-template-columns: 1fr; }
+            .pricing-card.popular { transform: none; }
+            .pricing-card.popular:hover { transform: translateY(-6px); }
+
+            .section-title h2 { font-size: 28px; }
+            .cta-section h2 { font-size: 28px; }
+            .footer .container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .footer-links { justify-content: center; }
+
+            .ad-banner h3 { font-size: 18px; }
+            .ad-banner p { font-size: 14px; }
+            .ad-banner .ad-text { gap: 12px; }
+            .ad-banner .ad-content { padding: 16px 20px; }
+
+            .ad-banner--3 .ad-content { padding: 20px 18px; }
+            .ad-banner--3 h3 { font-size: 20px; }
+            .ad-banner--3 p { font-size: 14px; }
+            .ad-banner--3 .btn-primary-cta,
+            .ad-banner--3 .btn-secondary-cta-light { width: 100%; justify-content: center; }
+
+            .ad-banner--4 .ad-content { padding: 20px 18px; }
+            .ad-banner--4 h3 { font-size: 20px; }
+            .ad-banner--4 p { font-size: 14px; }
+            .ad-banner--4 .btn-warm-cta,
+            .ad-banner--4 .btn-secondary-cta-warm { width: 100%; justify-content: center; }
+
+            .ad-banner--5 .ad-content { padding: 20px 18px; }
+            .ad-banner--5 h3 { font-size: 20px; }
+            .ad-banner--5 p { font-size: 14px; }
+            .ad-banner--5 .btn-pink-blue-cta,
+            .ad-banner--5 .btn-secondary-cta-pink-blue { width: 100%; justify-content: center; }
+
+            .cta-section { padding: 72px 0; }
+            .cta-section .cta-buttons { flex-direction: column; align-items: center; }
+            .cta-section .btn-primary-cta,
+            .cta-section .btn-secondary-cta { width: 100%; justify-content: center; }
+            .cta-section .cta-glow { width: 300px; height: 300px; top: -100px; right: -100px; }
+            .cta-section .cta-glow--2 { width: 250px; height: 250px; bottom: -100px; left: -100px; }
+            .cta-section .cta-bg-grid { background-size: 32px 32px; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 { font-size: 24px; }
+            .hero-buttons .btn-primary,
+            .hero-buttons .btn-secondary { width: 100%; justify-content: center; }
+            .features-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .feature-card { padding: 14px 10px; }
+            .feature-card h3 { font-size: 14px; }
+            .feature-card p { font-size: 12px; }
+            .feature-icon { width: 32px; height: 32px; font-size: 16px; margin-bottom: 8px; }
+            .deep-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .deep-item { padding: 12px 10px; }
+            .deep-item h4 { font-size: 13px; }
+            .deep-item p { font-size: 12px; }
+            .deep-icon { width: 36px; height: 36px; font-size: 18px; }
+            .showcase .showcase-grid { gap: 14px; }
+            .showcase-card { padding: 16px 14px; }
+            .showcase-card .card-icon-wrap { width: 40px; height: 40px; font-size: 20px; }
+            .showcase-card h3 { font-size: 15px; }
+            .showcase-card .metric-value { font-size: 20px; }
+            .showcase-extra { padding: 14px 16px; }
+            .security-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .security-card { padding: 14px 10px; }
+            .testimonial-grid { grid-template-columns: 1fr; gap: 12px; }
+            .testimonial-card { padding: 16px 12px; }
+            .deploy-steps { grid-template-columns: 1fr; gap: 12px; }
+            .deploy-step { padding: 12px 8px; }
+            .faq-list { grid-template-columns: 1fr; gap: 10px; }
+            .faq-question { padding: 12px 14px; font-size: 13px; }
+            .faq-answer { padding: 0 14px 14px 14px; font-size: 13px; }
+            .ad-banner .ad-text { flex-direction: column; gap: 6px; }
+            .ad-banner .ad-content { padding: 14px 16px; }
+            .ad-banner h3 { font-size: 16px; }
+            .ad-banner p { font-size: 13px; }
+            .ad-tag { font-size: 11px; padding: 3px 12px; }
+            .ad-banner--3 h3 { font-size: 18px; }
+            .ad-banner--3 .btn-primary-cta,
+            .ad-banner--3 .btn-secondary-cta-light { font-size: 14px; padding: 12px 20px; }
+            .ad-banner--4 h3 { font-size: 18px; }
+            .ad-banner--4 .btn-warm-cta,
+            .ad-banner--4 .btn-secondary-cta-warm { font-size: 14px; padding: 12px 20px; }
+            .ad-banner--5 h3 { font-size: 18px; }
+            .ad-banner--5 .btn-pink-blue-cta,
+            .ad-banner--5 .btn-secondary-cta-pink-blue { font-size: 14px; padding: 12px 20px; }
+            .cta-section h2 { font-size: 24px; }
+            .cta-section .cta-desc { font-size: 16px; }
+            .cta-section .btn-primary-cta,
+            .cta-section .btn-secondary-cta { font-size: 15px; padding: 14px 24px; }
+        }
+
+        @media (min-width: 769px) {
+            .faq-list {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                max-width: 100%;
+            }
+            .faq-item { margin-bottom: 0; }
+        }
+
+        /* ===== SWCHAT 组件样式覆盖 ===== */
+        .swchat__fab {
+            bottom: 28px !important;
+            right: 28px !important;
+            width: 56px !important;
+            height: 56px !important;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            box-shadow: 0 8px 28px rgba(37, 99, 235, 0.5) !important;
+        }
+        .swchat__fab:hover {
+            transform: scale(1.08) !important;
+            box-shadow: 0 12px 40px rgba(37, 99, 235, 0.55) !important;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 18px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #dbeafe;
+            color: #2563eb;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 导航 ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="#" class="nav-brand">
+                <div class="logo-icon">S</div>
+                <span>SWCHAT</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#hero">首页</a></li>
+                <li><a href="#features">功能</a></li>
+                <li><a href="#deep-features">深度解析</a></li>
+                <li><a href="#showcase">演示</a></li>
+                <li><a href="#pricing">价格</a></li>
+                <li><a href="#faq">常见问题</a></li>
+                <li><a href="admin.html" target="_blank" class="nav-cta">管理后台</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="切换菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== 英雄区 ===== -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="tag">🚀 新一代智能客服</div>
+                <h1>
+                    让每一次对话<br />
+                    <span class="highlight">都高效温暖</span>
+                </h1>
+                <p class="sub">
+                    SWCHAT 是一款轻量、实时、可私有化部署的智能客服系统。
+                    无需数据库，开箱即用，助您轻松连接每一位访客，提升转化与满意度。
+                </p>
+                <div class="hero-buttons">
+                    <a href="#pricing" class="btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L12 22"/><path d="M17 13L12 18L7 13"/></svg>
+                        免费试用
+                    </a>
+                    <a href="#features" class="btn-secondary">
+                        了解更多
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12H19"/><path d="M12 5L19 12L12 19"/></svg>
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">数据库 · 零依赖</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">3s</span>
+                        <span class="stat-label">轮询实时通信</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">私有化部署</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">∞</span>
+                        <span class="stat-label">无限访客</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-preview" id="heroPreview">
+                <div class="preview-header">
+                    <div class="preview-avatar">👤</div>
+                    <div class="preview-header-info">
+                        <h4>小智 · 客服</h4>
+                        <span><i>●</i> 在线 · 通常秒回</span>
+                    </div>
+                </div>
+                <div class="preview-messages" id="previewMessages">
+                    <div class="preview-msg agent">
+                        <div class="bubble">你好呀！👋 欢迎来到 SWCHAT 官网</div>
+                        <span class="time">12:00</span>
+                    </div>
+                    <div class="preview-msg agent">
+                        <div class="bubble">有什么可以帮你的吗？</div>
+                        <span class="time">12:01</span>
+                    </div>
+                    <div class="preview-msg user" style="opacity:0.5;">
+                        <div class="bubble">我想了解一下你们的客服系统</div>
+                        <span class="time">12:02</span>
+                    </div>
+                </div>
+                <div class="preview-footer">
+                    <input type="text" placeholder="输入消息..." id="demoInput" />
+                    <button class="send-demo" id="demoSend">➤</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 信任 Logo 墙 ===== -->
+    <section class="trust-bar">
+        <div class="container">
+            <span class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 企业级安全</span>
+            <span class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 实时响应</span>
+            <span class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> 私有化部署</span>
+            <span class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> 舜王科技出品</span>
+            <span class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> 开源精神</span>
+        </div>
+    </section>
+
+    <!-- ===== 广告通栏 1 ===== -->
+    <section class="ad-banner ad-banner--1">
+        <div class="container">
+            <div class="ad-content">
+                <div class="ad-text">
+                    <span class="ad-icon">🔥</span>
+                    <span class="ad-tag orange">限时特惠</span>
+                    <h3>SWCHAT 专业版年度订阅 5 折起</h3>
+                    <p>活动截止日期：2026年7月31日，立即抢购锁定优惠！</p>
+                </div>
+                <a href="#pricing" class="btn-primary">立即抢购</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 核心能力 ===== -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <span class="tag">核心能力</span>
+                <h2>功能全面 · 即开即用</h2>
+                <p>从访客接入到客服管理，覆盖完整对话生命周期，轻量高效</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon">💬</div><h3>浮动聊天框</h3><p>右下角悬浮按钮，一键打开聊天窗口，不干扰用户浏览，支持移动端自适应。</p><span class="feature-tag">开箱即用</span></div>
+                <div class="feature-card"><div class="feature-icon">👥</div><h3>多访客管理</h3><p>管理后台实时查看在线访客列表，支持邀请对话、备注别名，高效处理多路咨询。</p><span class="feature-tag">高效协同</span></div>
+                <div class="feature-card"><div class="feature-icon">📋</div><h3>离线留言板</h3><p>客服离线时自动切换留言模式，访客留下联系方式与诉求，不错失任何商机。</p><span class="feature-tag">永不掉线</span></div>
+                <div class="feature-card"><div class="feature-icon">🌐</div><h3>IP 归属地识别</h3><p>自动识别访客所在城市，生成「成都访客1234」等友好昵称，了解用户地域分布。</p><span class="feature-tag">智能识别</span></div>
+                <div class="feature-card"><div class="feature-icon">💾</div><h3>JSON 文件存储</h3><p>无需 MySQL 等数据库，纯 JSON 文件存储，轻量高效，迁移部署极其简单。</p><span class="feature-tag">零依赖</span></div>
+                <div class="feature-card"><div class="feature-icon">🔐</div><h3>私有化部署</h3><p>所有数据保留在您的服务器，完全自主可控，符合企业数据安全合规要求。</p><span class="feature-tag">安全可控</span></div>
+                <div class="feature-card"><div class="feature-icon">📊</div><h3>聊天记录持久化</h3><p>所有对话自动保存至本地 JSON 文件，支持历史回溯，方便客服复盘与质检。</p><span class="feature-tag">永久保存</span></div>
+                <div class="feature-card"><div class="feature-icon">🔔</div><h3>新消息提醒</h3><p>访客新消息实时通知，支持声音提示，确保客服第一时间响应，提升满意度。</p><span class="feature-tag">即时触达</span></div>
+                <div class="feature-card"><div class="feature-icon">✏️</div><h3>访客备注别名</h3><p>支持为访客添加备注名，方便识别重要客户，提升个性化服务体验。</p><span class="feature-tag">客户画像</span></div>
+                <div class="feature-card"><div class="feature-icon">📱</div><h3>移动端自适应</h3><p>完美适配手机、平板、桌面，访客随时随地发起咨询，体验一致流畅。</p><span class="feature-tag">全平台</span></div>
+                <div class="feature-card"><div class="feature-icon">🔄</div><h3>Ajax 轮询通信</h3><p>基于轻量级 Ajax 轮询，无需 WebSocket，兼容所有 PHP 环境，稳定可靠。</p><span class="feature-tag">兼容性强</span></div>
+                <div class="feature-card"><div class="feature-icon">🧩</div><h3>外链 JS 一键接入</h3><p>提供独立外链 JS，任意网站只需插入一行代码，即可拥有完整客服能力。</p><span class="feature-tag">极简接入</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 广告通栏 2 ===== -->
+    <section class="ad-banner ad-banner--2">
+        <div class="container">
+            <div class="ad-content">
+                <div class="ad-text">
+                    <span class="ad-icon">🚀</span>
+                    <span class="ad-tag blue">免费试用</span>
+                    <h3>立即体验 SWCHAT 全部功能</h3>
+                    <p>无需信用卡，5 分钟完成部署，即刻拥有专业级客服能力</p>
+                </div>
+                <a href="admin.html" target="_blank" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #0369a1);">开始试用 →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 深度解析 · 美化 + 移动端两列 ===== -->
+    <section class="deep-features" id="deep-features">
+        <div class="container">
+            <div class="section-title">
+                <span class="tag">深度解析</span>
+                <h2>不止于聊天 · 更懂业务</h2>
+                <p>SWCHAT 在基础聊天之上，为企业和客服团队提供更强大的业务支撑能力</p>
+            </div>
+            <div class="deep-grid">
+                <div class="deep-item"><div class="deep-icon">📌</div><div><h4>访客邀请与主动对话</h4><p>管理员可主动邀请在线访客开始对话，变被动为主动，提升销售转化机会。</p></div></div>
+                <div class="deep-item"><div class="deep-icon">🧠</div><div><h4>智能路由与分配</h4><p>支持按访客来源、页面、地域等规则智能分配客服，实现精准服务。</p></div></div>
+                <div class="deep-item"><div class="deep-icon">📈</div><div><h4>数据看板与统计</h4><p>管理端内置数据概览，实时展示在线人数、今日咨询量、响应时长等关键指标。</p></div></div>
+                <div class="deep-item"><div class="deep-icon">🔗</div><div><h4>开放 API 接口</h4><p>提供完整的 REST API，方便与您的 CRM、工单系统、企业微信等第三方集成。</p></div></div>
+                <div class="deep-item"><div class="deep-icon">🛡️</div><div><h4>防骚扰与风控</h4><p>内置 IP 黑名单、敏感词过滤、频率限制等安全策略，保障客服环境清净。</p></div></div>
+                <div class="deep-item"><div class="deep-icon">📝</div><div><h4>工单一键转接</h4><p>复杂问题可一键转为工单，自动分配给相关部门，形成服务闭环。</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 高效管理 · 手机端四行 ===== -->
+    <section class="showcase" id="showcase">
+        <div class="container">
+            <div class="section-title">
+                <span class="tag">⚡ 高效管理</span>
+                <h2>一站式客服工作台</h2>
+                <p>从实时监控到智能回复，全面赋能客服团队，提升服务效率与质量</p>
+            </div>
+
+            <div class="showcase-grid">
+                <div class="showcase-card">
+                    <div class="card-icon-wrap"><span>👥</span></div>
+                    <h3>实时访客监控</h3>
+                    <p>直观展示在线访客列表，包含 IP、地区、访问页面等关键信息，让您对每一位访客了如指掌。</p>
+                    <div class="card-metric">
+                        <span class="metric-value">&lt;3s</span>
+                        <span class="metric-label">平均响应</span>
+                    </div>
+                </div>
+                <div class="showcase-card">
+                    <div class="card-icon-wrap"><span>💬</span></div>
+                    <h3>智能回复与邀请</h3>
+                    <p>主动邀请访客对话，支持快捷回复模板，告别重复劳动，让每一次沟通都高效专业。</p>
+                    <div class="card-metric">
+                        <span class="metric-value">+60%</span>
+                        <span class="metric-label">效率提升</span>
+                    </div>
+                </div>
+                <div class="showcase-card">
+                    <div class="card-icon-wrap"><span>📊</span></div>
+                    <h3>数据分析看板</h3>
+                    <p>实时统计咨询量、响应时长、满意度等核心指标，数据驱动业务决策，持续优化服务品质。</p>
+                    <div class="card-metric">
+                        <span class="metric-value">95%</span>
+                        <span class="metric-label">满意度</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-extra">
+                <span class="extra-icon">📋</span>
+                <div class="extra-text">
+                    <h4>留言与工单管理</h4>
+                    <p>自动收录离线留言，支持一键转为工单，无缝对接内部流程，确保每一个诉求都有回应。</p>
+                </div>
+                <a href="#features" class="extra-link">了解详情 →</a>
+            </div>
+
+            <div class="showcase-action">
+                <a href="admin.html" target="_blank" class="btn-primary">查看完整功能 →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 安全合规 ===== -->
+    <section class="security" id="security">
+        <div class="container">
+            <div class="section-title">
+                <span class="tag">🔒 安全合规</span>
+                <h2>企业级数据安全</h2>
+                <p>从传输到存储，全方位保障您的业务数据与客户隐私</p>
+            </div>
+            <div class="security-grid">
+                <div class="security-card"><div class="icon">🔐</div><h4>私有化部署</h4><p>数据完全保留在您的服务器，零外部泄露风险</p></div>
+                <div class="security-card"><div class="icon">📦</div><h4>本地 JSON 存储</h4><p>无需第三方数据库，数据自主可控，便于备份迁移</p></div>
+                <div class="security-card"><div class="icon">🧾</div><h4>操作日志审计</h4><p>完整记录客服操作行为，满足内部合规与追溯需求</p></div>
+                <div class="security-card"><div class="icon">🛡️</div><h4>敏感词过滤</h4><p>内置敏感词库，自动拦截不当内容，维护良好沟通环境</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 定价 ===== -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-title">
+                <span class="tag">💰 透明定价</span>
+                <h2>选择适合您的套餐</h2>
+                <p>灵活方案，满足从初创团队到大型企业的不同需求</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="plan-name">基础版</div>
+                    <div class="price">¥0 <span>/ 永久</span></div>
+                    <div class="plan-desc">适合个人站长、小型博客</div>
+                    <ul><li>1 个客服席位</li><li>每日 100 条消息</li><li>基础访客列表</li><li>离线留言板</li><li>社区技术支持</li></ul>
+                    <a href="admin.html" target="_blank" class="btn-primary">免费使用</a>
+                </div>
+                <div class="pricing-card popular">
+                    <div class="popular-badge">🔥 最受欢迎</div>
+                    <div class="plan-name">专业版</div>
+                    <div class="price">¥299 <span>/ 年</span></div>
+                    <div class="plan-desc">适合中小企业、电商团队</div>
+                    <ul><li>5 个客服席位</li><li>无限消息量</li><li>高级访客画像</li><li>聊天记录导出</li><li>专属技术支持</li><li>API 接口开放</li></ul>
+                    <a href="#cta" class="btn-primary">立即购买</a>
+                </div>
+                <div class="pricing-card">
+                    <div class="plan-name">企业版</div>
+                    <div class="price">定制 <span>/ 年</span></div>
+                    <div class="plan-desc">适合大型企业、集团客户</div>
+                    <ul><li>无限客服席位</li><li>私有化集群部署</li><li>SSO 单点登录</li><li>数据本地化合规</li><li>专属客户成功经理</li><li>定制化开发支持</li></ul>
+                    <a href="#cta" class="btn-primary">联系我们</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 通栏广告 4 · 用户评价上方 ===== -->
+    <section class="ad-banner ad-banner--4">
+        <div class="container">
+            <div class="ad-content">
+                <div class="ad-text">
+                    <span class="ad-tag-warm">🎁 新用户专享</span>
+                    <h3>零门槛免费试用 · 永久基础版</h3>
+                    <p>无需绑定信用卡，注册即享专业级客服能力，不满意随时退订。</p>
+                </div>
+                <div class="ad-actions">
+                    <a href="admin.html" target="_blank" class="btn-warm-cta">🚀 立即免费试用</a>
+                    <a href="#pricing" class="btn-secondary-cta-warm">查看套餐详情 →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 用户评价 ===== -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <span class="tag">💬 用户评价</span>
+                <h2>他们正在使用 SWCHAT</h2>
+                <p>来自真实用户的反馈，见证每一次高效对话</p>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card"><div class="stars">★★★★★</div><blockquote>“部署真的只需要5分钟，访客消息实时到达，客服团队效率提升了至少60%。”</blockquote><div class="author"><div class="author-avatar">张</div><div class="author-info"><strong>张明</strong><span>某电商平台 · 运营总监</span></div></div></div>
+                <div class="testimonial-card"><div class="stars">★★★★★</div><blockquote>“轻量、免费、无数据库，特别适合我们这种初创团队。留言板功能帮我们抓住不少潜在客户。”</blockquote><div class="author"><div class="author-avatar">李</div><div class="author-info"><strong>李欣</strong><span>某SaaS服务 · 创始人</span></div></div></div>
+                <div class="testimonial-card"><div class="stars">★★★★★</div><blockquote>“IP归属地识别非常实用，我们能快速了解用户分布，针对性优化客服话术。”</blockquote><div class="author"><div class="author-avatar">王</div><div class="author-info"><strong>王磊</strong><span>某教育机构 · 客服主管</span></div></div></div>
+                <div class="testimonial-card"><div class="stars">★★★★☆</div><blockquote>“私有化部署完美符合我们的数据安全要求，API接口让跟CRM打通变得很简单。”</blockquote><div class="author"><div class="author-avatar">赵</div><div class="author-info"><strong>赵雅</strong><span>某金融科技 · 技术负责人</span></div></div></div>
+                <div class="testimonial-card"><div class="stars">★★★★★</div><blockquote>“我们用了三年，稳定可靠，社区支持响应很快，强烈推荐给需要轻量客服方案的团队。”</blockquote><div class="author"><div class="author-avatar">陈</div><div class="author-info"><strong>陈锋</strong><span>某跨境电商 · 运营经理</span></div></div></div>
+                <div class="testimonial-card"><div class="stars">★★★★★</div><blockquote>“手机端体验非常好，我们80%的咨询来自移动端，界面简洁流畅。”</blockquote><div class="author"><div class="author-avatar">刘</div><div class="author-info"><strong>刘洋</strong><span>某生活服务平台 · 产品经理</span></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 通栏广告 3 ===== -->
+    <section class="ad-banner ad-banner--3">
+        <div class="container">
+            <div class="ad-content">
+                <div class="ad-text">
+                    <span class="ad-tag-glow">🎉 限时福利</span>
+                    <h3>部署遇到困难？我们帮您搞定！</h3>
+                    <p>专业工程师提供一对一远程协助，确保 5 分钟内完成部署，即刻开启智能客服之旅。</p>
+                </div>
+                <div class="ad-actions">
+                    <a href="tel:4009990004" class="btn-primary-cta">📞 立即咨询 400-999-0004</a>
+                    <a href="#pricing" class="btn-secondary-cta-light">了解更多方案 →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 三步部署 ===== -->
+    <section class="deploy">
+        <div class="container">
+            <div class="section-title">
+                <span class="tag">⚙️ 三步部署</span>
+                <h2>5 分钟快速上线</h2>
+                <p>无需专业知识，下载即用，轻松拥有企业级客服能力</p>
+            </div>
+            <div class="deploy-steps">
+                <div class="deploy-step"><div class="step-num">1</div><h4>下载源码包</h4><p>从官方仓库下载 SWCHAT 最新版本，解压至您的服务器目录</p></div>
+                <div class="deploy-step"><div class="step-num">2</div><h4>配置 API 地址</h4><p>修改 swchat.js 中的 api 地址，指向您自己的 api.php 文件路径</p></div>
+                <div class="deploy-step"><div class="step-num">3</div><h4>嵌入网站</h4><p>在您的网站页面中插入一行 &lt;script&gt; 标签，即可完成接入</p></div>
+                <div class="deploy-step"><div class="step-num">🎉</div><h4>开始接待</h4><p>打开管理后台，实时查看访客，与用户开启高效对话</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 常见问题 ===== -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="section-title">
+                <span class="tag">❓ 常见问题</span>
+                <h2>您关心的问题，这里都有答案</h2>
+                <p>关于 SWCHAT 的部署、使用、定制等高频问题</p>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item"><button class="faq-question">SWCHAT 需要数据库吗？<span class="arrow">▼</span></button><div class="faq-answer">完全不需要！SWCHAT 使用纯 JSON 文件存储所有数据，无需安装 MySQL、PostgreSQL 等数据库，开箱即用，迁移极其简单。</div></div>
+                <div class="faq-item"><button class="faq-question">部署需要什么服务器环境？<span class="arrow">▼</span></button><div class="faq-answer">只需支持 PHP 5.2 及以上版本的 Web 服务器（Apache/Nginx/IIS 均可），无需任何额外扩展，兼容性极强。</div></div>
+                <div class="faq-item"><button class="faq-question">能否与我的现有系统集成？<span class="arrow">▼</span></button><div class="faq-answer">可以。SWCHAT 提供完整的 REST API，支持与 CRM、工单系统、企业微信、钉钉等第三方系统无缝集成，实现数据互通。</div></div>
+                <div class="faq-item"><button class="faq-question">数据安全如何保障？<span class="arrow">▼</span></button><div class="faq-answer">SWCHAT 支持完全私有化部署，所有数据保留在您自己的服务器，不经过任何第三方。同时内置敏感词过滤、IP 黑名单等安全策略，保障沟通环境安全。</div></div>
+                <div class="faq-item"><button class="faq-question">免费版和专业版有什么区别？<span class="arrow">▼</span></button><div class="faq-answer">免费版提供 1 个客服席位和每日 100 条消息，适合个人或小型站点起步。专业版提供 5 个席位、无限消息、高级访客画像、API 接口和专属技术支持，满足中小企业全场景需求。</div></div>
+                <div class="faq-item"><button class="faq-question">如何获得技术支持？<span class="arrow">▼</span></button><div class="faq-answer">免费用户可通过社区论坛和文档中心获取支持。付费用户享有专属技术顾问，7×12 小时在线响应，紧急问题可致电 400-999-0004。</div></div>
+                <div class="faq-item"><button class="faq-question">SWCHAT 支持多语言吗？<span class="arrow">▼</span></button><div class="faq-answer">目前 SWCHAT 主要支持中文（简体），但前端界面和消息内容均可自定义，您可以根据需要修改语言包或直接编辑 HTML 模板。</div></div>
+                <div class="faq-item"><button class="faq-question">可以自定义聊天窗口的样式吗？<span class="arrow">▼</span></button><div class="faq-answer">当然可以！SWCHAT 的 CSS 样式完全开放，您可以根据品牌需求自由调整颜色、字体、圆角、大小等视觉元素，实现完全定制化。</div></div>
+                <div class="faq-item"><button class="faq-question">升级会丢失历史数据吗？<span class="arrow">▼</span></button><div class="faq-answer">不会。SWCHAT 的数据存储在独立的 JSON 文件中，升级时只需覆盖 PHP 和 JS 文件，数据文件不受影响，所有聊天记录和访客信息都会完整保留。</div></div>
+                <div class="faq-item"><button class="faq-question">支持对接微信公众号或小程序吗？<span class="arrow">▼</span></button><div class="faq-answer">SWCHAT 提供了开放的 API 接口，您可以通过二次开发将 SWCHAT 的消息收发能力与微信公众号、小程序、企业微信等平台打通，实现多渠道统一响应。</div></div>
+                <div class="faq-item"><button class="faq-question">是否有数据备份与恢复功能？<span class="arrow">▼</span></button><div class="faq-answer">SWCHAT 的数据是标准的 JSON 文件，您可以直接通过服务器文件备份机制（如定时打包 data 目录）进行备份。恢复时只需将备份文件放回原目录即可，简单可靠。</div></div>
+                <div class="faq-item"><button class="faq-question">售后保障包含哪些内容？<span class="arrow">▼</span></button><div class="faq-answer">付费用户享有 7×12 小时专属技术顾问服务，包括部署指导、故障排查、性能优化、定制化开发咨询等。紧急问题可拨打 400-999-0004 获得即时响应。</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 公司 ===== -->
+    <section class="company">
+        <div class="container">
+            <div class="company-grid">
+                <div class="company-info">
+                    <span class="tag">🏢 关于我们</span>
+                    <h2>成都舜王科技有限公司</h2>
+                    <p>成都舜王科技有限公司互联网事业部，专注于企业级通信与数字化解决方案。SWCHAT 是我们自主研发的轻量级智能客服系统，秉承"让每一次对话都高效温暖"的使命，已服务超过 2000 家企业客户，涵盖电商、教育、金融、医疗等多个行业。</p>
+                    <p>我们坚持开源精神与技术普惠，致力于让每一家企业都能以极低成本拥有专业级的客户服务能力。</p>
+                    <div class="contact-row">
+                        <a href="tel:4009990004">📞 400-999-0004</a>
+                        <a href="#">📍 四川省成都市成华区和润路77号</a>
+                    </div>
+                </div>
+                <div class="company-map">
+                    <div style="background:#eef2f6;width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;border-radius:20px;min-height:260px;">
+                        <span style="font-size:40px;">📍</span>
+                        <span style="font-weight:600;color:#1e293b;">成都 · 成华区和润路77号</span>
+                        <span style="font-size:13px;color:#94a3b8;">成都舜王科技有限公司 互联网事业部</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         通栏广告 5 · CTA 上方 (粉蓝色系)
+         ============================================================ -->
+    <section class="ad-banner ad-banner--5">
+        <div class="container">
+            <div class="ad-content">
+                <div class="ad-text">
+                    <span class="ad-tag-pink-blue">💎 付费专享</span>
+                    <h3>专业版用户 · 专属增值服务</h3>
+                    <p>购买专业版即享 7×12 小时专属技术顾问、定制化部署指导与优先工单响应。</p>
+                </div>
+                <div class="ad-actions">
+                    <a href="#pricing" class="btn-pink-blue-cta">🔥 立即升级专业版</a>
+                    <a href="#faq" class="btn-secondary-cta-pink-blue">了解服务详情 →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CTA 板块 · 全新设计 ===== -->
+    <section class="cta-section" id="cta">
+        <div class="cta-bg-grid"></div>
+        <div class="cta-glow"></div>
+        <div class="cta-glow--2"></div>
+        <div class="container">
+            <div class="cta-content">
+                <div class="cta-badge">✨ 立即开启</div>
+                <h2>准备好开启智能对话了吗？</h2>
+                <p class="cta-desc">免费体验 SWCHAT 的全部功能，5 分钟完成部署，即刻连接您的每一位访客。</p>
+                <div class="cta-buttons">
+                    <a href="admin.html" target="_blank" class="btn-primary-cta">进入管理后台 →</a>
+                    <a href="#" class="btn-secondary-cta" onclick="document.querySelector('.swchat__fab')?.click(); return false;">💬 在线咨询</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 页脚 ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-brand">
+                <div class="logo-text">SWCHAT</div>
+                <p>智能客服聊天系统 · 让每一次对话都高效温暖</p>
+                <p style="margin-top:6px;font-size:12px;color:#94a3b8;">开发单位：成都舜王科技有限公司互联网事业部</p>
+                <p style="font-size:12px;color:#94a3b8;">服务热线：400-999-0004</p>
+            </div>
+            <div class="footer-links">
+                <div class="col"><h4>产品</h4><a href="#features">功能特性</a><a href="#deep-features">深度解析</a><a href="#pricing">价格方案</a><a href="admin.html" target="_blank">管理后台</a></div>
+                <div class="col"><h4>支持</h4><a href="#faq">常见问题</a><a href="#">文档中心</a><a href="#">隐私政策</a><a href="#">服务条款</a></div>
+                <div class="col"><h4>公司</h4><a href="#">成都舜王科技有限公司</a><a href="#" style="font-size:13px;color:#94a3b8;cursor:default;">四川省成都市成华区和润路77号</a><a href="tel:4009990004">400-999-0004</a></div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div style="margin-bottom:8px;">
+                <strong>成都舜王科技有限公司互联网事业部</strong> © 2015-2026 版权所有
+            </div>
+            <div class="license">
+                <span>📡 增值电信业务运营牌照：川B2-20240767号</span>
+                <span>蜀ICP备16023211号</span>
+                <span>川公网安备 51010802000011号</span>
+                <span>川工商网备 51010820160425082720号</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== 插入 SWCHAT 聊天组件 ===== -->
+    <script src="http://cha.t400.com.cn/chat/swchat.js"></script>
+
+    <!-- ===== 落地页交互脚本 ===== -->
+    <script>
+        (function() {
+            'use strict';
+
+            var toggle = document.getElementById('navToggle');
+            var navLinks = document.getElementById('navLinks');
+            toggle.addEventListener('click', function() { navLinks.classList.toggle('open'); });
+            navLinks.querySelectorAll('a').forEach(function(a) {
+                a.addEventListener('click', function() { navLinks.classList.remove('open'); });
+            });
+
+            var navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 20) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            var demoInput = document.getElementById('demoInput');
+            var demoSend = document.getElementById('demoSend');
+            var previewMsgs = document.getElementById('previewMessages');
+
+            function addDemoMsg(text, type) {
+                var div = document.createElement('div');
+                div.className = 'preview-msg ' + type;
+                div.style.animation = 'fadeInUp 0.3s ease';
+                var bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.textContent = text;
+                div.appendChild(bubble);
+                var time = document.createElement('span');
+                time.className = 'time';
+                var d = new Date();
+                time.textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+                div.appendChild(time);
+                var last = previewMsgs.querySelector('.preview-msg.user');
+                if (last && last.style.opacity === '0.5') {
+                    last.remove();
+                }
+                previewMsgs.appendChild(div);
+                previewMsgs.scrollTop = previewMsgs.scrollHeight;
+                while (previewMsgs.children.length > 8) {
+                    previewMsgs.removeChild(previewMsgs.firstChild);
+                }
+            }
+
+            function handleDemoSend() {
+                var text = demoInput.value.trim();
+                if (!text) return;
+                addDemoMsg(text, 'user');
+                demoInput.value = '';
+                setTimeout(function() {
+                    var replies = [
+                        '收到！我们的客服会尽快回复您 😊',
+                        '感谢您的咨询，请问还有什么可以帮您的？',
+                        '好的，我这边记下了，稍后为您处理 🙌',
+                        'SWCHAT 支持多访客同时咨询，非常高效哦！',
+                        '您可以点击右下角 💬 按钮与我们实时对话'
+                    ];
+                    var reply = replies[Math.floor(Math.random() * replies.length)];
+                    addDemoMsg(reply, 'agent');
+                }, 600 + Math.random() * 800);
+            }
+
+            demoSend.addEventListener('click', handleDemoSend);
+            demoInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleDemoSend();
+                }
+            });
+
+            var faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(function(item) {
+                item.classList.remove('open');
+                var question = item.querySelector('.faq-question');
+                question.addEventListener('click', function() {
+                    var isOpen = item.classList.contains('open');
+                    if (isOpen) {
+                        item.classList.remove('open');
+                    } else {
+                        item.classList.add('open');
+                    }
+                });
+            });
+
+            var checkSwchat = setInterval(function() {
+                var fab = document.querySelector('.swchat__fab');
+                if (fab) {
+                    clearInterval(checkSwchat);
+                    fab.classList.remove('swchat__fab_hidden');
+                    var ctaBtn = document.querySelector('.cta-section .btn-secondary-cta');
+                    if (ctaBtn) {
+                        ctaBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            if (fab) fab.click();
+                        });
+                    }
+                }
+            }, 500);
+
+            document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                anchor.addEventListener('click', function(e) {
+                    var target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        e.preventDefault();
+                        var offset = 80;
+                        var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                        window.scrollTo({ top: top, behavior: 'smooth' });
+                        navLinks.classList.remove('open');
+                    }
+                });
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
